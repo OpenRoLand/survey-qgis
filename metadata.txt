@@ -1,0 +1,21 @@
+# This file contains metadata for your plugin.
+
+[general]
+name=Siscadro Survey Time Filter
+qgisMinimumVersion=3.30
+qgisMaximumVersion=4.99
+description=Time-filterable survey points layer with intervals and snake animation
+version=0.1.0
+author=Advaita SRL
+email=advaita.brasov@gmail.com
+about=Loads a siscadro-survey GeoPackage as a managed, time-filterable point layer. Precomputes survey intervals, filters by date range, animates a sliding time window, and draws a temporary snake line between consecutive observations.
+tracker=https://git.advaita.ro/advaita/siscadro/survey-qgis.git
+repository=https://git.advaita.ro/advaita/siscadro/survey-qgis.git
+hasProcessingProvider=False
+tags=advaita, siscadro, survey, temporal, romania
+homepage=https://git.advaita.ro/advaita/siscadro/survey-qgis.git
+category=Vector
+icon=assets/icon.png
+experimental=False
+deprecated=False
+server=False

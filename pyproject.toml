@@ -1,0 +1,81 @@
+[project]
+name = "siscadro-survey-qgis"
+dynamic = ["version"]
+description = "QGIS plugin for time-filterable survey point layers from a siscadro-survey GeoPackage."
+authors = [{name = "Nicu Tofan", email = "nicu.tofan@gmail.com"}]
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: Other/Proprietary License",
+    "Operating System :: OS Independent",
+    "Private :: Do Not Upload",
+]
+dependencies = [
+    "siscadro-survey",
+]
+
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "flake8",
+    "isort",
+    "pytest",
+    "pytest-cov",
+]
+
+
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=67.0", "setuptools_scm[toml]>=8"]
+
+
+[tool.setuptools]
+include-package-data = true
+
+
+[tool.setuptools.packages.find]
+include = ["survey_qgis*"]
+exclude = ["tests*", "docker*", "playground*", "assets*"]
+
+
+[tool.setuptools_scm]
+fallback_version = "0.1.0-dev"
+write_to = "survey_qgis/__version__.py"
+
+
+[tool.isort]
+profile = "black"
+skip = [
+    "test_*.py", "*_test.py",
+    "tests_*.py", "*_tests.py",
+]
+src_paths = "survey_qgis"
+known_first_party = "survey_qgis"
+line_length = 80
+
+
+[tool.black]
+line-length = 80
+target-version = ['py39', 'py310', 'py311']
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = [
+    "test_*.py", "*_test.py",
+    "tests_*.py", "*_tests.py",
+]
+python_classes = ["Test", "Acceptance"]
+python_functions = ["test"]
+
+
+[tool.flake8]
+max-line-length = 80
+docstring-convention = "google"
+exclude = [
+    "test_*.py", "*_test.py",
+    "tests_*.py", "*_tests.py",
+]
+extend-ignore = "E203, E501, E704"

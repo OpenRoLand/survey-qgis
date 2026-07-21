@@ -1,0 +1,41 @@
+# Docker Compose services for Qt5 (QGIS 3 LTR) and Qt6 (QGIS 4) tests.
+#
+# Mounts:
+#   .                 -> /plugin
+#   ../ ( __py_libs__) -> /libs  (sibling libraries)
+
+services:
+  qt5:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        QGIS_IMAGE: qgis/qgis:ltr-noble
+    image: siscadro-survey-qgis:qt5
+    working_dir: /plugin
+    volumes:
+      - .:/plugin
+      - ..:/libs:ro
+    environment:
+      LIBS_DIR: /libs
+      PLUGIN_DIR: /plugin
+      QT_QPA_PLATFORM: offscreen
+    command: ["pytest", "-q"]
+
+  qt6:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        # QGIS 4.x / Qt6 on Ubuntu Questing (see qgis/qgis-docker README).
+        QGIS_IMAGE: qgis/qgis:stable-questing
+    image: siscadro-survey-qgis:qt6
+    working_dir: /plugin
+    volumes:
+      - .:/plugin
+      - ..:/libs:ro
+    environment:
+      LIBS_DIR: /libs
+      PLUGIN_DIR: /plugin
+      QT_QPA_PLATFORM: offscreen
+    command: ["pytest", "-q"]
