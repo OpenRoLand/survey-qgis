@@ -14,13 +14,15 @@ install_editable() {
     local path="$1"
     if [[ -d "${path}" && -f "${path}/pyproject.toml" ]]; then
         echo "Installing editable: ${path}"
-        "${PYTHON_BIN}" -m pip install -e "${path}" --quiet
+        "${PYTHON_BIN}" -m pip install -e "${path}" --quiet --no-deps \
+            --no-build-isolation
     else
         echo "Skipping missing dependency path: ${path}"
     fi
 }
 
-# Install core survey library first, then optional format adapters.
+# Install the CRS helper and core survey library first, then optional adapters.
+install_editable "${LIBS_DIR}/transdat"
 install_editable "${LIBS_DIR}/siscadro-survey"
 install_editable "${LIBS_DIR}/siscadro-cube"
 install_editable "${LIBS_DIR}/siscadro-rw5"

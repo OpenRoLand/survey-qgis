@@ -10,12 +10,20 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV QT_QPA_PLATFORM=offscreen
 ENV PYTHONUNBUFFERED=1
 
-# Ensure pip targets the QGIS Python interpreter.
-RUN python3 -m pip install --no-cache-dir --upgrade pip \
-    && python3 -m pip install --no-cache-dir \
-        "pytest>=7,<9" \
-        "pytest-cov>=4,<7" \
-        "pytest-qgis>=1.3,<3"
+# Install test dependencies in an isolated environment because recent Ubuntu
+# QGIS images mark the system interpreter as externally managed.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3-venv \
+    && rm -rf /var/lib/apt/lists/* \
+    && python3 -m venv /opt/survey-qgis-venv \
+    && /opt/survey-qgis-venv/bin/python -m pip install --no-cache-dir --upgrade pip \
+    && /opt/survey-qgis-venv/bin/python -m pip install --no-cache-dir \
+        "setuptools>=77" "wheel" \
+    && /opt/survey-qgis-venv/bin/python -m pip install --no-cache-dir \
+        "pytest==9.1.1" \
+        "pytest-cov==7.1.0" \
+        "pytest-qgis==4.0.1"
+ENV PATH="/opt/survey-qgis-venv/bin:${PATH}"
 
 WORKDIR /plugin
 

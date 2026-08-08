@@ -4,7 +4,7 @@ dynamic = ["version"]
 description = "QGIS plugin for time-filterable survey point layers from a siscadro-survey GeoPackage."
 authors = [{name = "Nicu Tofan", email = "nicu.tofan@gmail.com"}]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: Other/Proprietary License",
@@ -23,6 +23,7 @@ dev = [
     "isort==8.0.1",
     "pytest==9.1.1",
     "pytest-cov==7.1.0",
+    "pytest-qgis==4.0.1",
 ]
 
 

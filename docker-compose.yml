@@ -15,7 +15,7 @@ services:
     working_dir: /plugin
     volumes:
       - .:/plugin
-      - ..:/libs:ro
+      - ..:/libs
     environment:
       LIBS_DIR: /libs
       PLUGIN_DIR: /plugin
@@ -33,7 +33,7 @@ services:
     working_dir: /plugin
     volumes:
       - .:/plugin
-      - ..:/libs:ro
+      - ..:/libs
     environment:
       LIBS_DIR: /libs
       PLUGIN_DIR: /plugin
