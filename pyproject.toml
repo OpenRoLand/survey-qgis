@@ -2,17 +2,16 @@
 name = "siscadro-survey-qgis"
 dynamic = ["version"]
 description = "QGIS plugin for time-filterable survey point layers from a siscadro-survey GeoPackage."
+license = "GPL-3.0-or-later"
 authors = [{name = "Nicu Tofan", email = "nicu.tofan@gmail.com"}]
 readme = "README.md"
 requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: Other/Proprietary License",
     "Operating System :: OS Independent",
-    "Private :: Do Not Upload",
 ]
 dependencies = [
-    "siscadro-survey",
+    "siscadro-survey-core",
 ]
 
 
