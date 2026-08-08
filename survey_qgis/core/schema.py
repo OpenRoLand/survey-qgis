@@ -13,7 +13,7 @@ from typing import Optional
 from sqlalchemy import text
 from sqlalchemy.engine import Connection, Engine
 
-from siscadro_survey.geopackage import LAYER_SRS_ID
+from openroland_survey.geopackage import LAYER_SRS_ID
 
 logger = logging.getLogger(__name__)
 

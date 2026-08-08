@@ -22,11 +22,11 @@ install_editable() {
 }
 
 # Install the CRS helper and core survey library first, then optional adapters.
-install_editable "${LIBS_DIR}/transdat"
-install_editable "${LIBS_DIR}/siscadro-survey"
-install_editable "${LIBS_DIR}/siscadro-cube"
-install_editable "${LIBS_DIR}/siscadro-rw5"
-install_editable "${LIBS_DIR}/siscadro-jxl"
+install_editable "${LIBS_DIR}/openroland-crs"
+install_editable "${LIBS_DIR}/openroland-survey-core"
+install_editable "${LIBS_DIR}/openroland-cube"
+install_editable "${LIBS_DIR}/openroland-rw5"
+install_editable "${LIBS_DIR}/openroland-jxl"
 
 # Make the plugin package importable without a formal install.
 export PYTHONPATH="${PLUGIN_DIR}${PYTHONPATH:+:${PYTHONPATH}}"

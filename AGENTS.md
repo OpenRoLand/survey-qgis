@@ -15,6 +15,6 @@ make test-qt5
 make test-qt6
 ```
 
-Sibling libraries under `../` (`siscadro-survey`, and optionally cube/rw5/jxl)
+Sibling libraries under `../` (`openroland-survey-core`, and optionally cube/rw5/jxl)
 are mounted into containers as `/libs` and installed editable by the
 entrypoint.

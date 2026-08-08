@@ -35,9 +35,9 @@ __all__ = [
     "datetime_range_from_iso",
 ]
 
-MANAGED_LAYER_PROPERTY = "siscadro_survey_managed"
+MANAGED_LAYER_PROPERTY = "openroland_survey_managed"
 MANAGED_LAYER_VALUE = "1"
-CUSTOM_GPKG_PROPERTY = "siscadro_survey_gpkg"
+CUSTOM_GPKG_PROPERTY = "openroland_survey_gpkg"
 
 
 def create_observations_layer(

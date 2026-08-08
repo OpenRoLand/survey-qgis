@@ -1,4 +1,4 @@
-"""Database helpers for opening a siscadro-survey GeoPackage."""
+"""Database helpers for opening a openroland-survey-core GeoPackage."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from typing import Union
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from siscadro_survey.database import create_engine, ensure_schema
+from openroland_survey.database import create_engine, ensure_schema
 
 logger = logging.getLogger(__name__)
 

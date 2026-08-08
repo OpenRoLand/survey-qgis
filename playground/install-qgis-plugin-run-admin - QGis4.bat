@@ -3,7 +3,7 @@ setlocal
 
 :: ---- CONFIGURE THESE ----
 set PLUGIN_NAME=siscadro_survey
-set DEV_DIR=D:\prog\__py_libs__\siscadro-survey-qgis
+set DEV_DIR=D:\prog\openroland\siscadro-survey-qgis
 set QGIS_PLUGIN_DIR=%APPDATA%\QGIS\QGIS4\profiles\default\python\plugins
 set TARGET_DIR=%QGIS_PLUGIN_DIR%\%PLUGIN_NAME%
 

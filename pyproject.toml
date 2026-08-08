@@ -1,7 +1,7 @@
 [project]
 name = "siscadro-survey-qgis"
 dynamic = ["version"]
-description = "QGIS plugin for time-filterable survey point layers from a siscadro-survey GeoPackage."
+description = "QGIS plugin for time-filterable survey point layers from a openroland-survey-core GeoPackage."
 license = "GPL-3.0-or-later"
 authors = [{name = "Nicu Tofan", email = "nicu.tofan@gmail.com"}]
 readme = "README.md"
@@ -11,7 +11,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "siscadro-survey-core",
+    "openroland-survey-core",
 ]
 
 

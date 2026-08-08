@@ -40,7 +40,7 @@ __all__ = [
     "apply_path_lines_color_scale",
 ]
 
-PATH_LINES_LAYER_PROPERTY = "siscadro_survey_path_lines"
+PATH_LINES_LAYER_PROPERTY = "openroland_survey_path_lines"
 PATH_LINES_LAYER_VALUE = "1"
 PATH_LINES_CLASS_COUNT = 10
 PATH_LINES_LINE_WIDTH = 1.8

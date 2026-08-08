@@ -3,7 +3,7 @@
 ## Goal
 
 Add an optional temporal mode to the map in the sibling
-`siscadro-survey` web application. The mode must expose the same useful
+`openroland-survey-core` web application. The mode must expose the same useful
 semantics as the QGIS plugin:
 
 - compute continuous survey intervals from observation timestamps;
@@ -16,7 +16,7 @@ semantics as the QGIS plugin:
 The existing non-temporal map remains the default. No QGIS installation is
 required to serve or use the web application.
 
-The implementation target is `D:\prog\__py_libs__\siscadro-survey`. This
+The implementation target is `D:\prog\openroland\openroland-survey-core`. This
 file lives in the QGIS repository because that repository is the reference
 implementation.
 
@@ -182,7 +182,7 @@ segments after every selection or window change.
 ### New endpoint
 
 Register `GET /api/map/observations` beside `/api/map/points` in
-`siscadro_survey/web.py`.
+`openroland_survey/web.py`.
 
 Query parameters:
 
@@ -224,7 +224,7 @@ still produces one observation in this release, which matches QGIS. Expanding
 
 ### Response schemas
 
-Add separate Pydantic types in `siscadro_survey/schemas.py` rather than
+Add separate Pydantic types in `openroland_survey/schemas.py` rather than
 overloading `MapFeature`. A representative response is:
 
 ```json
@@ -497,7 +497,7 @@ and transport button. Assert disabled states while data or range is missing.
 
 ## Documentation, Packaging, and Verification
 
-Update the `siscadro-survey` repository, not the QGIS changelog, when the
+Update the `openroland-survey-core` repository, not the QGIS changelog, when the
 feature is implemented:
 
 - add the temporal controls, observation semantics, and untimed behavior to
@@ -525,13 +525,13 @@ documented PowerShell workflow and verify the exact build command again:
 ```powershell
 npm --prefix frontend run build
 Remove-Item `
-    -LiteralPath siscadro_survey/static/assets `
+    -LiteralPath openroland_survey/static/assets `
     -Recurse `
     -Force `
     -ErrorAction SilentlyContinue
 Copy-Item `
     -Path frontend/dist/* `
-    -Destination siscadro_survey/static/ `
+    -Destination openroland_survey/static/ `
     -Recurse `
     -Force
 npm --prefix frontend run build

@@ -9,10 +9,10 @@ from pathlib import Path
 import pytest
 from sqlalchemy.orm import Session
 
-from siscadro_survey.database import create_engine, ensure_schema, utcnow
-from siscadro_survey.geopackage import encode_point_geom
-from siscadro_survey.models import SourceFile, SurveyPoint, SurveyPointSource
-from siscadro_survey.records import SourceFormat
+from openroland_survey.database import create_engine, ensure_schema, utcnow
+from openroland_survey.geopackage import encode_point_geom
+from openroland_survey.models import SourceFile, SurveyPoint, SurveyPointSource
+from openroland_survey.records import SourceFormat
 
 from survey_qgis.core.db import open_engine
 from survey_qgis.core.observations import materialize_observations

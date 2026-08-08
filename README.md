@@ -1,6 +1,6 @@
 # Siscadro Survey Time Filter (QGIS plugin)
 
-QGIS plugin that loads a siscadro-survey GeoPackage as a managed,
+QGIS plugin that loads a openroland-survey-core GeoPackage as a managed,
 time-filterable survey observations layer. It precomputes survey intervals,
 filters by date range, animates a sliding time window via the QGIS Temporal
 Controller, draws a red-line snake overlay between consecutive observations,
@@ -12,11 +12,11 @@ index.
 ## Requirements
 
 - Docker (all testing and development happens in containers)
-- A siscadro-survey GeoPackage (schema version 2)
+- A openroland-survey-core GeoPackage (schema version 2)
 - Editable sibling libraries under `D:\prog\__py_libs__` (mounted into
   containers as `/libs`):
-  - `siscadro-survey`
-  - optionally `siscadro-cube`, `siscadro-rw5`, `siscadro-jxl`
+  - `openroland-survey-core`
+  - optionally `openroland-cube`, `openroland-rw5`, `openroland-jxl`
 
 There is **no local virtualenv** in this repository.
 
@@ -50,7 +50,7 @@ Images used:
 
 The compose file mounts this repo at `/plugin` and the sibling
 `__py_libs__` directory at `/libs`. The entrypoint installs
-`siscadro-survey` (and available format libraries) editable against the
+`openroland-survey-core` (and available format libraries) editable against the
 container's QGIS Python, then runs `xvfb-run -a pytest`.
 
 ## Deploy to a host QGIS
@@ -61,7 +61,7 @@ make deploy QGIS_PLUGIN_DIR="%APPDATA%/QGIS/QGIS4/profiles/default/python/plugin
 
 Alternatively run
 `playground/install-qgis-plugin-run-admin.bat` (as Administrator) to create a
-junction named `siscadro_survey` into the QGIS 4 plugins folder.
+junction named `openroland_survey` into the QGIS 4 plugins folder.
 
 Restart QGIS and enable **Siscadro Survey Time Filter**.
 
