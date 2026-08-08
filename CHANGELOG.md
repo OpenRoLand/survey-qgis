@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Development tooling is pinned to the shared Survey baseline: pytest 9.1.1,
+  pytest-cov 7.1.0, Black 26.5.1, isort 8.0.1, and Flake8 7.3.0.
+
 ### Fixed
 
 - Make the nested `survey_qgis` package importable when the plugin is

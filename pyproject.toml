@@ -18,11 +18,11 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "black",
-    "flake8",
-    "isort",
-    "pytest",
-    "pytest-cov",
+    "black==26.5.1",
+    "flake8==7.3.0",
+    "isort==8.0.1",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
 ]
 
 
