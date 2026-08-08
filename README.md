@@ -3,8 +3,8 @@
 QGIS plugin that loads a siscadro-survey GeoPackage as a managed,
 time-filterable survey observations layer. It precomputes survey intervals,
 filters by date range, animates a sliding time window via the QGIS Temporal
-Controller, and draws a temporary "snake" line between consecutive
-observations.
+Controller, draws a red-line snake overlay between consecutive observations,
+and can generate an on-demand path-lines memory layer.
 
 This is private, unpublished code. Do not upload it to a public package
 index.
@@ -30,7 +30,9 @@ There is **no local virtualenv** in this repository.
 - Multi-layer control: when several managed layers exist, choose which
   one the panel drives
 - Sliding time window via native QGIS temporal properties
-- Legend-hidden snake line layer for autoadvance animation
+- Red-line canvas snake overlay for autoadvance animation, colored
+  blue→red within the current temporal window (newest is always red)
+- On-demand path-lines memory layer (cool-to-warm direction scale)
 
 ## Docker tests
 
@@ -71,7 +73,8 @@ Restart QGIS and enable **Siscadro Survey Time Filter**.
 3. On Intervals, filter by start/end date, select intervals to show, and
    optionally recompute with a different gap threshold.
 4. On Time, set the sliding window size and use play/step to animate;
-   enable the snake overlay for the moving path.
+   enable the snake overlay for the moving path, or click
+   **Generate path lines layer** for a durable connecting-lines layer.
 
 ## Package layout
 
@@ -82,7 +85,7 @@ siscadro-survey-qgis/
     survey_qgis/
         plugin.py
         core/            # db, schema, observations, intervals, snake
-        layers/          # managed layer, snake layer, registry
+        layers/          # managed layer, path lines, snake overlay, registry
         gui/             # dock widget pages
     docker/
     tests/

@@ -63,12 +63,32 @@ def _create_observations_table(connection: Connection) -> None:
             "  seq INTEGER,"
             "  name TEXT,"
             "  code TEXT,"
+            "  description TEXT,"
             "  geom BLOB,"
             "  FOREIGN KEY (point_id) REFERENCES survey_points(id),"
             "  FOREIGN KEY (source_file_id) REFERENCES source_files(id)"
             ")"
         )
     )
+    # Migrate older plugin tables that pre-date the description column.
+    columns = {
+        str(row[1])
+        for row in connection.execute(
+            text(f"PRAGMA table_info({OBSERVATIONS_TABLE})")
+        ).fetchall()
+    }
+    if "description" not in columns:
+        connection.execute(
+            text(
+                f"ALTER TABLE {OBSERVATIONS_TABLE} "
+                f"ADD COLUMN description TEXT"
+            )
+        )
+        logger.info(
+            "Added description column to %s",
+            OBSERVATIONS_TABLE,
+        )
+
     connection.execute(
         text(
             f"CREATE INDEX IF NOT EXISTS "

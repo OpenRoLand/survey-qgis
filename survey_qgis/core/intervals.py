@@ -25,6 +25,7 @@ __all__ = [
     "IntervalRecord",
     "compute_intervals",
     "list_intervals",
+    "interval_date_bounds",
     "parse_observed_at",
 ]
 
@@ -347,3 +348,64 @@ def list_intervals(
                 )
             )
     return result
+
+
+def interval_date_bounds(
+    engine: Engine,
+) -> Optional[Tuple[datetime.datetime, datetime.datetime]]:
+    """Return the earliest and latest timestamps covered by intervals.
+
+    Prefers persisted intervals (``MIN(started_at)``, ``MAX(ended_at)``).
+    When no intervals exist, falls back to observation ``observed_at``
+    values.
+
+    Args:
+        engine: Survey GeoPackage engine.
+
+    Returns:
+        ``(earliest, latest)`` as timezone-aware UTC datetimes, or
+        ``None`` when the database has no timed rows.
+    """
+    ensure_plugin_schema(engine)
+
+    with engine.connect() as connection:
+        # Prefer interval coverage when intervals have been computed.
+        rows = connection.execute(
+            text(
+                f"SELECT started_at, ended_at FROM {INTERVALS_TABLE}"
+            )
+        ).fetchall()
+
+    if rows:
+        starts = [parse_observed_at(str(row[0])) for row in rows]
+        ends = [parse_observed_at(str(row[1])) for row in rows]
+        earliest = min(starts)
+        latest = max(ends)
+        logger.debug(
+            "Interval date bounds %s .. %s",
+            earliest.isoformat(),
+            latest.isoformat(),
+        )
+        return earliest, latest
+
+    # Fall back to observation timestamps when intervals are empty.
+    with engine.connect() as connection:
+        obs_rows = connection.execute(
+            text(
+                f"SELECT observed_at FROM {OBSERVATIONS_TABLE} "
+                f"WHERE observed_at IS NOT NULL"
+            )
+        ).fetchall()
+
+    if not obs_rows:
+        return None
+
+    times = [parse_observed_at(str(row[0])) for row in obs_rows]
+    earliest = min(times)
+    latest = max(times)
+    logger.debug(
+        "Observation date bounds %s .. %s",
+        earliest.isoformat(),
+        latest.isoformat(),
+    )
+    return earliest, latest

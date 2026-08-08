@@ -135,3 +135,26 @@ class TestComputeIntervals:
         filtered = list_intervals(seeded_engine, start=start, end=end)
         assert len(filtered) == 1
         assert filtered[0].observation_count == 2
+
+
+class TestIntervalDateBounds:
+    """Cover database min/max date helpers."""
+
+    def test_bounds_from_intervals(self, seeded_engine):
+        """Bounds span the earliest start and latest end of intervals."""
+        from survey_qgis.core.intervals import interval_date_bounds
+
+        compute_intervals(
+            seeded_engine,
+            threshold_seconds=1800,
+            group_by_source=False,
+        )
+        bounds = interval_date_bounds(seeded_engine)
+        assert bounds is not None
+        earliest, latest = bounds
+        assert earliest == datetime.datetime(
+            2024, 1, 1, 10, 0, tzinfo=datetime.timezone.utc
+        )
+        assert latest == datetime.datetime(
+            2024, 1, 1, 11, 5, tzinfo=datetime.timezone.utc
+        )

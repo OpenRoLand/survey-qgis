@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from survey_qgis.core.intervals import compute_intervals
 from survey_qgis.core.observations import ObservationRow, load_observations
-from survey_qgis.core.snake import build_snake_segments
+from survey_qgis.core.snake import (
+    SNAKE_COLOR_NEWEST,
+    SNAKE_COLOR_OLDEST,
+    build_snake_segments,
+    snake_segment_rgb,
+)
 
 
 class TestBuildSnakeSegments:
@@ -81,3 +86,23 @@ class TestBuildSnakeSegments:
             ),
         ]
         assert build_snake_segments(observations) == []
+
+
+class TestSnakeSegmentRgb:
+    """Cover blue→red ramp relative to the visible set."""
+
+    def test_single_segment_is_newest_red(self):
+        """One visible segment is always the newest (red) color."""
+        assert snake_segment_rgb(0, 1) == SNAKE_COLOR_NEWEST
+
+    def test_endpoints_are_blue_and_red(self):
+        """Oldest is blue and newest is red within a window."""
+        assert snake_segment_rgb(0, 5) == SNAKE_COLOR_OLDEST
+        assert snake_segment_rgb(4, 5) == SNAKE_COLOR_NEWEST
+
+    def test_midpoint_is_between_endpoints(self):
+        """Intermediate colors interpolate between blue and red."""
+        mid = snake_segment_rgb(1, 3)
+        assert SNAKE_COLOR_OLDEST[0] <= mid[0] <= SNAKE_COLOR_NEWEST[0]
+        assert mid != SNAKE_COLOR_OLDEST
+        assert mid != SNAKE_COLOR_NEWEST

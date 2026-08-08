@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Iterable, List, NamedTuple, Optional, Sequence, Set
+from typing import Iterable, List, NamedTuple, Optional, Sequence, Set, Tuple
 
 from survey_qgis.core.intervals import parse_observed_at
 from survey_qgis.core.observations import ObservationRow
@@ -13,7 +13,13 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "SnakeSegment",
     "build_snake_segments",
+    "snake_segment_rgb",
+    "SNAKE_COLOR_OLDEST",
+    "SNAKE_COLOR_NEWEST",
 ]
+
+SNAKE_COLOR_OLDEST = (0, 70, 255)
+SNAKE_COLOR_NEWEST = (220, 20, 20)
 
 
 class SnakeSegment(NamedTuple):
@@ -40,6 +46,46 @@ class SnakeSegment(NamedTuple):
     seg_end: str
     obs_id_a: int
     obs_id_b: int
+
+
+def snake_segment_rgb(index: int, count: int) -> Tuple[int, int, int]:
+    """Return blue→red RGB for segment ``index`` in a visible set.
+
+    The ramp is relative to the currently visible segments only: the
+    oldest (index 0) is blue and the newest (last index) is red. A
+    single segment is always red. Colors reset whenever the visible
+    set changes (for example on each temporal step).
+
+    Args:
+        index: Zero-based position among visible segments (oldest
+            first).
+        count: Number of visible segments.
+
+    Returns:
+        ``(r, g, b)`` integers in 0..255.
+    """
+    if count <= 1:
+        return SNAKE_COLOR_NEWEST
+    fraction = float(index) / float(count - 1)
+    red = int(
+        round(
+            SNAKE_COLOR_OLDEST[0]
+            + fraction * (SNAKE_COLOR_NEWEST[0] - SNAKE_COLOR_OLDEST[0])
+        )
+    )
+    green = int(
+        round(
+            SNAKE_COLOR_OLDEST[1]
+            + fraction * (SNAKE_COLOR_NEWEST[1] - SNAKE_COLOR_OLDEST[1])
+        )
+    )
+    blue = int(
+        round(
+            SNAKE_COLOR_OLDEST[2]
+            + fraction * (SNAKE_COLOR_NEWEST[2] - SNAKE_COLOR_OLDEST[2])
+        )
+    )
+    return (red, green, blue)
 
 
 def build_snake_segments(

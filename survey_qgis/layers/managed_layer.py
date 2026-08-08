@@ -9,11 +9,15 @@ from typing import Optional, Sequence, Union
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsDateTimeRange,
+    QgsPalLayerSettings,
+    QgsTextFormat,
     QgsUnitTypes,
     QgsVectorLayer,
+    QgsVectorLayerSimpleLabeling,
     QgsVectorLayerTemporalProperties,
 )
 from qgis.PyQt.QtCore import QDateTime, Qt
+from qgis.PyQt.QtGui import QColor, QFont
 
 from survey_qgis.core.schema import OBSERVATIONS_TABLE
 
@@ -25,6 +29,7 @@ __all__ = [
     "is_managed_layer",
     "apply_interval_filter",
     "configure_temporal_properties",
+    "configure_point_labels",
     "set_temporal_filtering_active",
     "layer_gpkg_path",
     "datetime_range_from_iso",
@@ -66,6 +71,7 @@ def create_observations_layer(
     layer.setCustomProperty(MANAGED_LAYER_PROPERTY, MANAGED_LAYER_VALUE)
     layer.setCustomProperty(CUSTOM_GPKG_PROPERTY, str(path))
     configure_temporal_properties(layer)
+    configure_point_labels(layer)
     logger.info("Created managed survey layer from %s", path)
     return layer
 
@@ -121,6 +127,64 @@ def apply_interval_filter(
     layer.setSubsetString(expression)
     layer.triggerRepaint()
     logger.debug("Applied subset %s on layer %s", expression, layer.id())
+
+
+def configure_point_labels(layer: QgsVectorLayer) -> None:
+    """Label points with description when set, otherwise point name.
+
+    Args:
+        layer: Managed observations layer.
+    """
+    settings = QgsPalLayerSettings()
+    # Prefer description; fall back to the survey point number/name.
+    expression = (
+        "coalesce("
+        "nullif(trim(description), ''), "
+        "nullif(trim(name), '')"
+        ")"
+    )
+    if hasattr(settings, "setFieldName"):
+        settings.setFieldName(expression)
+        if hasattr(settings, "setIsExpression"):
+            settings.setIsExpression(True)
+    else:
+        settings.fieldName = expression
+        settings.isExpression = True
+
+    # Keep labels readable over survey basemaps.
+    text_format = QgsTextFormat()
+    text_format.setSize(9)
+    text_format.setColor(QColor(20, 20, 20))
+    font = QFont()
+    font.setPointSize(9)
+    text_format.setFont(font)
+    buffer_settings = text_format.buffer()
+    if hasattr(buffer_settings, "setEnabled"):
+        buffer_settings.setEnabled(True)
+        buffer_settings.setSize(0.8)
+        buffer_settings.setColor(QColor(255, 255, 255))
+        text_format.setBuffer(buffer_settings)
+    if hasattr(settings, "setFormat"):
+        settings.setFormat(text_format)
+    else:
+        settings.format = text_format
+
+    if hasattr(settings, "setPlacement"):
+        around_point = getattr(
+            QgsPalLayerSettings,
+            "AroundPoint",
+            None,
+        )
+        if around_point is None:
+            around_point = QgsPalLayerSettings.Placement.AroundPoint
+        settings.setPlacement(around_point)
+    else:
+        settings.placement = QgsPalLayerSettings.AroundPoint
+
+    labeling = QgsVectorLayerSimpleLabeling(settings)
+    layer.setLabeling(labeling)
+    layer.setLabelsEnabled(True)
+    logger.debug("Configured point labels on %s", layer.id())
 
 
 def configure_temporal_properties(

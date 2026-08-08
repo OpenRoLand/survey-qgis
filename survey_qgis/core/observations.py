@@ -72,7 +72,7 @@ def materialize_observations(engine: Engine) -> int:
             text(
                 f"INSERT INTO {OBSERVATIONS_TABLE} ("
                 "  point_id, source_file_id, observed_at, interval_id, "
-                "  seq, name, code, geom"
+                "  seq, name, code, description, geom"
                 ") "
                 "SELECT "
                 "  sps.survey_point_id, "
@@ -82,6 +82,7 @@ def materialize_observations(engine: Engine) -> int:
                 "  NULL, "
                 "  sp.name, "
                 "  sp.code, "
+                "  sp.description, "
                 "  sp.geom "
                 "FROM survey_point_sources AS sps "
                 "JOIN survey_points AS sp "

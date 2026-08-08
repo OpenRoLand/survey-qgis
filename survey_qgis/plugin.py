@@ -95,6 +95,7 @@ class SurveySnakePlugin:
     def unload(self) -> None:
         """Remove UI and disconnect project signals."""
         if self.dock is not None:
+            self.dock.cleanup()
             self.iface.removeDockWidget(self.dock)
             self.dock.deleteLater()
             self.dock = None

@@ -111,6 +111,7 @@ def seeded_engine(engine):
                 height_mm=height_mm,
                 name=f"P{index}",
                 code="TEST",
+                description=("Corner A" if index == 0 else None),
                 observed_at_utc=observed,
                 geom=encode_point_geom(east, north),
                 created_at=now,
@@ -137,3 +138,27 @@ def seeded_engine(engine):
 def opened_seeded(seeded_engine, gpkg_path):
     """Re-open the seeded gpkg via the plugin open_engine helper."""
     return open_engine(gpkg_path)
+
+
+@pytest.fixture(scope="session")
+def qgis_app():
+    """Provide a QgsApplication for tests that need the QGIS API.
+
+    Skips the entire dependent test when QGIS is not importable.
+    """
+    pytest.importorskip("qgis.core")
+    from qgis.core import QgsApplication
+
+    # Reuse an existing application when pytest is already inside QGIS.
+    existing = QgsApplication.instance()
+    if existing is not None:
+        yield existing
+        return
+
+    QgsApplication.setPrefixPath("/usr", True)
+    app = QgsApplication([], False)
+    app.initQgis()
+    try:
+        yield app
+    finally:
+        app.exitQgis()

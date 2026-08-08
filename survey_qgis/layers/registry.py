@@ -9,7 +9,7 @@ from qgis.core import QgsMapLayer, QgsProject, QgsVectorLayer
 from qgis.PyQt.QtCore import QObject, pyqtSignal
 
 from survey_qgis.layers.managed_layer import is_managed_layer
-from survey_qgis.layers.snake_layer import is_snake_layer
+from survey_qgis.layers.path_lines_layer import is_path_lines_layer
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class ManagedLayerRegistry(QObject):
         """
         super().__init__(parent)
         self._layers: Dict[str, QgsVectorLayer] = {}
-        self._snake_by_managed: Dict[str, str] = {}
+        self._path_lines_by_managed: Dict[str, str] = {}
         self._controlled_id: Optional[str] = None
         self._connected = False
 
@@ -88,18 +88,18 @@ class ManagedLayerRegistry(QObject):
         """
         project = project or QgsProject.instance()
         self._layers.clear()
-        snake_layers: Dict[str, QgsVectorLayer] = {}
+        path_layers: Dict[str, QgsVectorLayer] = {}
         for layer in project.mapLayers().values():
             if is_managed_layer(layer):
                 self._layers[layer.id()] = layer
-            elif is_snake_layer(layer):
-                snake_layers[layer.id()] = layer
+            elif is_path_lines_layer(layer):
+                path_layers[layer.id()] = layer
 
-        # Drop snake links whose managed layer is gone.
-        self._snake_by_managed = {
-            managed_id: snake_id
-            for managed_id, snake_id in self._snake_by_managed.items()
-            if managed_id in self._layers and snake_id in snake_layers
+        # Drop path-lines links whose managed layer is gone.
+        self._path_lines_by_managed = {
+            managed_id: path_id
+            for managed_id, path_id in self._path_lines_by_managed.items()
+            if managed_id in self._layers and path_id in path_layers
         }
 
         if self._controlled_id not in self._layers:
@@ -111,23 +111,38 @@ class ManagedLayerRegistry(QObject):
         self,
         layer: QgsVectorLayer,
         *,
-        snake_layer: Optional[QgsVectorLayer] = None,
+        path_lines_layer: Optional[QgsVectorLayer] = None,
         make_controlled: bool = True,
     ) -> None:
-        """Register a managed layer and optional snake overlay.
+        """Register a managed layer and optional path-lines layer.
 
         Args:
             layer: Managed observations layer.
-            snake_layer: Optional associated snake layer.
+            path_lines_layer: Optional associated path-lines layer.
             make_controlled: Whether to make this the controlled layer.
         """
         self._layers[layer.id()] = layer
-        if snake_layer is not None:
-            self._snake_by_managed[layer.id()] = snake_layer.id()
+        if path_lines_layer is not None:
+            self._path_lines_by_managed[layer.id()] = path_lines_layer.id()
         if make_controlled or self._controlled_id is None:
             self._controlled_id = layer.id()
             self.controlled_changed.emit(layer)
         self.layers_changed.emit()
+
+    def link_path_lines(
+        self,
+        managed_layer: QgsVectorLayer,
+        path_lines_layer: QgsVectorLayer,
+    ) -> None:
+        """Associate a path-lines layer with a managed layer.
+
+        Args:
+            managed_layer: Observations layer.
+            path_lines_layer: Memory path-lines layer.
+        """
+        self._path_lines_by_managed[managed_layer.id()] = (
+            path_lines_layer.id()
+        )
 
     def unregister(self, layer_id: str) -> None:
         """Remove a managed layer from the registry.
@@ -136,7 +151,7 @@ class ManagedLayerRegistry(QObject):
             layer_id: Layer id that was removed.
         """
         self._layers.pop(layer_id, None)
-        self._snake_by_managed.pop(layer_id, None)
+        self._path_lines_by_managed.pop(layer_id, None)
         if self._controlled_id == layer_id:
             self._controlled_id = next(iter(self._layers), None)
             self.controlled_changed.emit(self.controlled_layer())
@@ -167,18 +182,20 @@ class ManagedLayerRegistry(QObject):
         self._controlled_id = layer.id()
         self.controlled_changed.emit(layer)
 
-    def snake_layer_id(self, managed_layer_id: str) -> Optional[str]:
-        """Return the snake layer id linked to a managed layer."""
-        return self._snake_by_managed.get(managed_layer_id)
+    def path_lines_layer_id(
+        self, managed_layer_id: str
+    ) -> Optional[str]:
+        """Return the path-lines layer id linked to a managed layer."""
+        return self._path_lines_by_managed.get(managed_layer_id)
 
-    def snake_for(
+    def path_lines_for(
         self, managed_layer: QgsVectorLayer
     ) -> Optional[QgsVectorLayer]:
-        """Return the snake overlay for a managed layer, if present."""
-        snake_id = self._snake_by_managed.get(managed_layer.id())
-        if not snake_id:
+        """Return the path-lines layer for a managed layer, if present."""
+        path_id = self._path_lines_by_managed.get(managed_layer.id())
+        if not path_id:
             return None
-        layer = QgsProject.instance().mapLayer(snake_id)
+        layer = QgsProject.instance().mapLayer(path_id)
         if isinstance(layer, QgsVectorLayer):
             return layer
         return None
@@ -202,19 +219,19 @@ class ManagedLayerRegistry(QObject):
         for layer_id in layer_ids:
             if layer_id in self._layers:
                 self._layers.pop(layer_id, None)
-                self._snake_by_managed.pop(layer_id, None)
+                self._path_lines_by_managed.pop(layer_id, None)
                 changed = True
                 if self._controlled_id == layer_id:
                     self._controlled_id = next(iter(self._layers), None)
                     self.controlled_changed.emit(self.controlled_layer())
-            # Also drop snake links that point at a removed snake layer.
+            # Drop path-lines links that point at a removed path layer.
             stale = [
                 managed_id
-                for managed_id, snake_id in self._snake_by_managed.items()
-                if snake_id == layer_id
+                for managed_id, path_id in self._path_lines_by_managed.items()
+                if path_id == layer_id
             ]
             for managed_id in stale:
-                self._snake_by_managed.pop(managed_id, None)
+                self._path_lines_by_managed.pop(managed_id, None)
                 changed = True
         if changed:
             self.layers_changed.emit()

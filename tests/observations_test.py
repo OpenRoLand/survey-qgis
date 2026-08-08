@@ -23,6 +23,19 @@ class TestMaterializeObservations:
             assert row.north is not None
             assert row.seq is not None
 
+    def test_materialize_copies_description(self, seeded_engine):
+        """Description is copied from survey_points when present."""
+        with seeded_engine.connect() as connection:
+            rows = connection.execute(
+                text(
+                    f"SELECT name, description FROM {OBSERVATIONS_TABLE} "
+                    f"ORDER BY name"
+                )
+            ).fetchall()
+        by_name = {str(row[0]): row[1] for row in rows}
+        assert by_name.get("P0") == "Corner A"
+        assert by_name.get("P1") is None
+
     def test_seq_orders_by_time(self, seeded_engine):
         """Global seq follows observation time."""
         timed = load_observations(seeded_engine, require_time=True)
