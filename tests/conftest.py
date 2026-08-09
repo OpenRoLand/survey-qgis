@@ -31,7 +31,8 @@ def engine(gpkg_path: Path):
     engine = create_engine(gpkg_path)
     ensure_schema(engine)
     ensure_plugin_schema(engine)
-    return engine
+    yield engine
+    engine.dispose()
 
 
 def _aware(year, month, day, hour=0, minute=0, second=0):
@@ -137,7 +138,11 @@ def seeded_engine(engine):
 @pytest.fixture
 def opened_seeded(seeded_engine, gpkg_path):
     """Re-open the seeded gpkg via the plugin open_engine helper."""
-    return open_engine(gpkg_path)
+    engine = open_engine(gpkg_path)
+    try:
+        yield engine
+    finally:
+        engine.dispose()
 
 
 @pytest.fixture(scope="session")
