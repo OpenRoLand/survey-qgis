@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+# The Qt5/Qt6 Docker tests mount the parent directory as sibling libraries
+# (see docker-compose.yml: "../ -> /libs"), matching the local layout under
+# D:\prog\openroland. In a public GitHub Actions run this repository is
+# checked out alone, so the Survey core sibling has to be checked out next
+# to it explicitly. The final public repository slug for Survey core is not
+# yet approved (see docs/01. Roadmap.md's "public repository names and
+# publication order" decision in the business planning repository), so the
+# slug is read from a repository variable instead of being hardcoded here.
+# Set the `SURVEY_CORE_REPO` repository variable once that repository is
+# public. A missing value fails explicitly rather than reporting unrun tests
+# as a successful validation.
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out plugin
+        uses: actions/checkout@v4
+        with:
+          path: survey-qgis
+      - name: Require the Survey core repository
+        env:
+          SURVEY_CORE_REPO: ${{ vars.SURVEY_CORE_REPO }}
+        run: test -n "$SURVEY_CORE_REPO"
+      - name: Check out Survey core sibling
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.SURVEY_CORE_REPO }}
+          path: openroland-survey-core
+      - name: Run Qt5/Qt6 Docker tests
+        working-directory: survey-qgis
+        run: make test

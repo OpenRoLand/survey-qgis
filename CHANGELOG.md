@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Added
+
+- Public GitHub Actions CI workflow (``.github/workflows/ci.yml``) running
+  the Qt5/Qt6 Docker tests, once the Survey core sibling repository is
+  public. The workflow requires the ``SURVEY_CORE_REPO`` repository variable
+  and fails explicitly when it is missing.
+
 ### Changed
 
 - Development tooling is pinned to the shared Survey baseline: pytest 9.1.1,
