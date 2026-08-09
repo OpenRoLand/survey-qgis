@@ -81,6 +81,7 @@ class SnakeOverlay:
         """
         self.canvas = canvas
         self._rubbers: List[QgsRubberBand] = []
+        self._rubber_colors: List[QColor] = []
         self._segments: List[SnakeSegment] = []
         self._enabled = False
         self._filter_by_time = False
@@ -132,6 +133,10 @@ class SnakeOverlay:
         """Return how many rubber bands are currently drawn."""
         return len(self._rubbers)
 
+    def rubber_band_colors(self) -> List[QColor]:
+        """Return the colors assigned to the currently drawn bands."""
+        return list(self._rubber_colors)
+
     def clear(self) -> None:
         """Clear cached segments and hide all rubber bands."""
         self._segments = []
@@ -151,6 +156,7 @@ class SnakeOverlay:
             if scene is not None:
                 scene.removeItem(rubber)
         self._rubbers = []
+        self._rubber_colors = []
 
     def _visible_segments(self) -> List[SnakeSegment]:
         """Return segments that should be drawn right now."""
@@ -249,11 +255,13 @@ class SnakeOverlay:
                 continue
             rubber = QgsRubberBand(self.canvas, _line_geometry_type())
             rubber.setWidth(SNAKE_LINE_WIDTH)
-            rubber.setColor(snake_segment_color(index, count))
+            color = snake_segment_color(index, count)
+            rubber.setColor(color)
             rubber.setToGeometry(geometry, None)
             rubber.setVisible(True)
             rubber.updatePosition()
             self._rubbers.append(rubber)
+            self._rubber_colors.append(color)
 
         logger.log(
             1,

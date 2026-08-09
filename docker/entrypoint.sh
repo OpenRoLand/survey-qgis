@@ -31,8 +31,4 @@ install_editable "${LIBS_DIR}/openroland-jxl"
 # Make the plugin package importable without a formal install.
 export PYTHONPATH="${PLUGIN_DIR}${PYTHONPATH:+:${PYTHONPATH}}"
 
-if command -v xvfb-run >/dev/null 2>&1; then
-    exec xvfb-run -a "$@"
-fi
-
 exec "$@"

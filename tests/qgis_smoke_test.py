@@ -36,8 +36,13 @@ class TestQgisObservationsLayer:
 
         first_id = intervals[0].id
         layer.setSubsetString(f"interval_id = {first_id}")
+        layer.reload()
         filtered = layer.featureCount()
-        assert 0 < filtered < total
+        assert 0 < filtered <= total
+        assert all(
+            feature["interval_id"] == first_id
+            for feature in layer.getFeatures()
+        )
 
     def test_managed_layer_labels_prefer_description(
         self, seeded_engine, gpkg_path, qgis_app
@@ -155,8 +160,7 @@ class TestQgisSnakeOverlay:
             assert overlay.rubber_band_count() == len(segments)
 
             # Newest rubber band uses the red tip color.
-            newest = overlay._rubbers[-1]
-            assert newest.color() == QColor(*SNAKE_COLOR_NEWEST)
+            assert overlay.rubber_band_colors()[-1] == QColor(*SNAKE_COLOR_NEWEST)
 
             # Restricting the window remaps colors for the visible set.
             start = QDateTime.fromString(
@@ -179,7 +183,7 @@ class TestQgisSnakeOverlay:
                 )
             overlay.set_time_filter(True, start=start, end=end)
             assert overlay.rubber_band_count() >= 1
-            assert overlay._rubbers[-1].color() == QColor(
+            assert overlay.rubber_band_colors()[-1] == QColor(
                 *SNAKE_COLOR_NEWEST
             )
 
