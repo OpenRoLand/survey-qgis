@@ -166,4 +166,7 @@ def qgis_app():
     try:
         yield app
     finally:
-        app.exitQgis()
+        # QGIS 4 currently segfaults during explicit shutdown in the test
+        # container after all tests have passed. Process teardown performs the
+        # same cleanup safely for both supported QGIS generations.
+        pass

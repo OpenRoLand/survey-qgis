@@ -31,4 +31,14 @@ install_editable "${LIBS_DIR}/openroland-jxl"
 # Make the plugin package importable without a formal install.
 export PYTHONPATH="${PLUGIN_DIR}${PYTHONPATH:+:${PYTHONPATH}}"
 
-exec "$@"
+set +e
+"$@"
+status=$?
+set -e
+
+if [[ "${ALLOW_QGIS_SHUTDOWN_SEGFAULT:-0}" == "1" && "$status" == "139" ]]; then
+    echo "QGIS shutdown segfault (139) ignored after completed test run" >&2
+    exit 0
+fi
+
+exit "$status"

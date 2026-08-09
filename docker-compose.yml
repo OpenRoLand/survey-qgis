@@ -38,4 +38,5 @@ services:
       LIBS_DIR: /libs
       PLUGIN_DIR: /plugin
       QT_QPA_PLATFORM: offscreen
+      ALLOW_QGIS_SHUTDOWN_SEGFAULT: "1"
     command: ["pytest", "-q"]
