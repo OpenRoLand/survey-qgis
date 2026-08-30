@@ -1,5 +1,14 @@
 # Agent notes
 
+This repository adheres to:
+
+- https://github.com/TNick/repository-specs/tree/v1.1.0/qgis-plugin
+
+Read the profile and its complete transitive `spec.toml` inheritance graph
+before changing the repository. Read applicable numbered records in `design/`.
+
+Design records: public
+
 ## Changelog
 
 Before finishing a task that changed production code (application or library
